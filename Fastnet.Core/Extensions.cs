@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Fastnet.Core.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
@@ -19,11 +20,12 @@ namespace Fastnet.Core
     /// <summary>
     /// 
     /// </summary>
-    public static partial class extensions
+    public static partial class Extensions
     {
-        private static Regex splitToWords = new Regex(@"(\b[^\s]+\b)", RegexOptions.IgnoreCase);
-        private static Regex removeNonAlphaNumerics = new Regex(@"[^a-zA-Z0-9\p{L}]", RegexOptions.IgnoreCase);
-        private static TimeZoneInfo ukTime = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+        private static readonly ILogger log = ApplicationLoggerFactory.CreateLogger("Fastnet.Core.Extensions");
+        private static readonly Regex splitToWords = new Regex(@"(\b[^\s]+\b)", RegexOptions.IgnoreCase);
+        private static readonly Regex removeNonAlphaNumerics = new Regex(@"[^a-zA-Z0-9\p{L}]", RegexOptions.IgnoreCase);
+        private static readonly TimeZoneInfo ukTime = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
         /// <summary>
         /// get the last 'word' in the string using a single space separator
         /// </summary>
@@ -146,7 +148,7 @@ namespace Fastnet.Core
             {
                 return JsonConvert.DeserializeObject<T>(jsonString, settings);
             }
-            return default(T);
+            return default;
         }
         /// <summary>
         /// convert json to an instance of the requested Type

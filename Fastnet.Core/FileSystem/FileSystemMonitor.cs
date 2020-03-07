@@ -86,7 +86,7 @@ namespace Fastnet.Core
     public class FileSystemMonitor : FileSystemWatcher
     {
         private DateTimeOffset lastChangeTime;
-        private ILogger log;
+        private readonly ILogger log;
         private readonly ConcurrentQueue<FileSystemMonitorEvent> queue;
         //private readonly int notificationInterval;
         //private readonly int pathMonitorInterval;
@@ -95,9 +95,9 @@ namespace Fastnet.Core
         private CancellationTokenSource pathMonitorCancellationSource;
         private readonly Action<Exception> onError;
         private bool isPathReachable;
-        private string path;
+        private readonly string path;
         private readonly FileSystemMonitorOptions options;
-        private Action<IEnumerable<FileSystemMonitorEvent>> onChanges;
+        private readonly Action<IEnumerable<FileSystemMonitorEvent>> onChanges;
         private bool IsPathReachable
         {
             get => isPathReachable;
