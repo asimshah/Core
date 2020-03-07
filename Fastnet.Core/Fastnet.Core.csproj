@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Authors>Asim Shah</Authors>
+    <Copyright>@2018</Copyright>
+    <Version>2.0.129</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CronExpressionDescriptor" Version="2.14.0" />
+    <PackageReference Include="IPNetwork2" Version="2.4.0.187" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell .\BumpProjectVersion.ps1 $(ProjectPath)" />
+  </Target>
+</Project>

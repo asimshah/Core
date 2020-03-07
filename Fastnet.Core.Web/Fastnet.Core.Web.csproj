@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>2.0.186</Version>
+  </PropertyGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell .\BumpProjectVersion.ps1 $(ProjectPath)" />
+  </Target>
+  <ItemGroup>
+    <Compile Remove="Controllers\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <None Remove="Controllers\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fastnet.Core" Version="2.0.109" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+  </ItemGroup>
+</Project>
