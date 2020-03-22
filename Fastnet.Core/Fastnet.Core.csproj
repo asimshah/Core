@@ -3,7 +3,29 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <Authors>Asim Shah</Authors>
     <Copyright>@2018</Copyright>
-    <Version>2.0.6</Version>
+    <Version>2.1.10</Version>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdatePackageVersion>True</UpdatePackageVersion>
+    <PackageVersionSettings>AssemblyVersion.NoneWithAutoReset.Alpha</PackageVersionSettings>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <ShouldCreateLogs>True</ShouldCreateLogs>
+    <AdvancedSettingsExpanded>False</AdvancedSettingsExpanded>
+    <UpdateAssemblyVersion>False</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <UpdatePackageVersion>True</UpdatePackageVersion>
+    <PackageVersionSettings>AssemblyVersion.IncrementWithAutoReset.None</PackageVersionSettings>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CronExpressionDescriptor" Version="2.15.0" />
@@ -22,6 +44,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell .\BumpProjectVersion.ps1 $(ProjectPath)" />
+    <Exec Command="rem powershell .\BumpProjectVersion.ps1 $(ProjectPath)" />
   </Target>
 </Project>
