@@ -46,7 +46,19 @@ namespace Fastnet.Core.Logging
             // something like Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             // BUT I am not clear how to detect this case (IWebHostEnvironment is not available here...)
             // for now - 31Oct2019 - I am ignoring this issue as I do not have a need for a non AspNetCore app in the near future
-            logFolderPath = env.ContentRootPath;
+            switch(options.CurrentValue.LogFolderSetting)
+            {
+                case LogFolderSetting.Normal:
+                    logFolderPath = env.ContentRootPath;
+                    break;
+                //case LogFolderSetting.Special:
+                //    logFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                //    break;
+                case LogFolderSetting.Custom:
+                    logFolderPath = options.CurrentValue.LogFolder;
+                    break;
+            }
+
             _filter = trueFilter;
             _optionsReloadToken = options.OnChange(ReloadLoggerOptions);
             ReloadLoggerOptions(options.CurrentValue);

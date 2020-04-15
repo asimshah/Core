@@ -5,7 +5,9 @@ using System.Linq;
 
 namespace Fastnet.Core
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public class StepTimer
+
     {
         public Dictionary<string, long> StepTimes { get; set; } = new Dictionary<string, long>();
         private Stopwatch sw;
@@ -46,4 +48,5 @@ namespace Fastnet.Core
             return string.Join(", ", list);
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

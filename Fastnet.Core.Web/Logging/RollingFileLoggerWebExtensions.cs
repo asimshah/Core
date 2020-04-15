@@ -5,9 +5,6 @@ using System;
 
 namespace Fastnet.Core.Web.Logging
 {
-    /// <summary>
-    /// 
-    /// </summary>
     //public static class RollingFileLoggerWebExtensions
     //{
     //    /// <summary>

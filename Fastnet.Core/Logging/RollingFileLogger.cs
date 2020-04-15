@@ -56,7 +56,10 @@ namespace Fastnet.Core.Logging
                 WriteMessage(logLevel, Name, eventId.Id, message, exception);
             }
         }
-
+        //internal void WriteText(string text)
+        //{
+        //    fw.WriteText(text);
+        //}
         protected void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
         {
             //?? insert eventId into log text??

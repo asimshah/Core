@@ -4,6 +4,14 @@ using System.Collections.Generic;
 
 namespace Fastnet.Core.Logging
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    public enum LogFolderSetting
+
+    {
+        Normal, // uses environment ContentRootPath - good for web apps
+        //Special, // uses Environment.SpecialFolder.MyDocuments
+        Custom, // uses log folder in RollingFileLoggerOptions
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -20,6 +28,9 @@ namespace Fastnet.Core.Logging
         /// 
         /// </summary>
         public bool IncludeScopes { get; set; } = false;
+        public LogFolderSetting LogFolderSetting { get; set; } = LogFolderSetting.Normal;
+        public string LogFolder { get; set; }
+
     }
     internal class RollingFileLoggerSettings : IRollingFileLoggerSettings
     {
@@ -38,4 +49,5 @@ namespace Fastnet.Core.Logging
             return Switches.TryGetValue(name, out level);
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

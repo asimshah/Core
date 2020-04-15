@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace Fastnet.Core.Web
 {
     ///// <summary>
@@ -76,7 +76,9 @@ namespace Fastnet.Core.Web
     /// </summary>
     public abstract class HostedService : BackgroundService
     {
+
         protected bool hasStarted = false;
+
         protected bool isStopping = false;
         protected bool hasStopped = false;
         protected readonly ILogger log;
@@ -112,3 +114,4 @@ namespace Fastnet.Core.Web
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

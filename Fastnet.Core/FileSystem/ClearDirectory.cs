@@ -11,7 +11,6 @@ namespace Fastnet.Core
         /// 
         /// </summary>
         /// <param name="dir"></param>
-        /// <param name="log"></param>
         public static void Clear(this DirectoryInfo dir/*, ILogger log = null*/)
         {
             if (dir.Exists)

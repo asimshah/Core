@@ -45,6 +45,10 @@ namespace Fastnet.Core.Logging
             //eventWriterEventLog.Log = "Application";
             this.logFolder = logFolder;
         }
+        //public void WriteText(string text)
+        //{
+        //    messageQueue.Add($"   {text}");
+        //}
         public void WriteMessage(LogLevel logLevel, string name, int processId, int threadId, string message, Exception exception)
         {
 
@@ -135,8 +139,6 @@ namespace Fastnet.Core.Logging
                             today = DateTime.Today;
                             logFilename = $"{today.Year}-{today.Month:00}-{today.Day:00}.log";
                             var fullPath = Path.Combine(logFolder, logFilename);
-                            //Debug.WriteLine($"log file is {fullPath}");
-                            //eventWriterEventLog.WriteEntry($"log file is {fullPath}");
                             var stream = File.Open(fullPath, FileMode.Append, FileAccess.Write, FileShare.Read);
                             writer = new StreamWriter(stream);
                         }
@@ -149,44 +151,5 @@ namespace Fastnet.Core.Logging
                 }
             }
         }
-        //[Obsolete]
-        //private void EnsureValidLogFile()
-        //{
-        //    //Debug.WriteLine("EnsureValidLogFile(1)");
-        //    if (writer == null || today != DateTime.Today)
-        //    {
-        //        using (SemaphoreSlim flag = new SemaphoreSlim(1))
-        //        {
-        //            flag.Wait();
-        //            try
-        //            {
-        //                if (writer == null || today != DateTime.Today)
-        //                {
-        //                    if (!Directory.Exists(logFolder))
-        //                    {
-        //                        Directory.CreateDirectory(logFolder);
-        //                    }
-        //                    if (writer != null)
-        //                    {
-        //                        writer.Flush();
-        //                        writer.Dispose();
-        //                    }
-        //                    today = DateTime.Today;
-        //                    logFilename = $"{today.Year}-{today.Month:00}-{today.Day:00}.log";
-        //                    var fullPath = Path.Combine(logFolder, logFilename);
-        //                    //Debug.WriteLine($"log file is {fullPath}");
-        //                    eventWriterEventLog.WriteEntry($"log file is is {fullPath}");
-        //                    var stream = File.Open(fullPath, FileMode.Append, FileAccess.Write, FileShare.Read);
-        //                    writer = new StreamWriter(stream);
-        //                }
-        //            }
-        //            catch (Exception xe)
-        //            {
-        //                eventWriterEventLog.WriteEntry($"exception: ${xe.Message}");
-        //                throw;
-        //            }
-        //        }
-        //    }
-        //}
     }
 }

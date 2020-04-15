@@ -28,15 +28,16 @@ namespace Fastnet.Core
         private static readonly TimeZoneInfo ukTime = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
         /// <summary>
         /// get the last 'word' in the string using a single space separator
+        /// (roman numerals at the end are ignored)
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
         public static string GetLastName(this string text)
         {
             var parts = text.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-            if(parts.Length > 2)
+            if (parts.Length > 2)
             {
-                switch(parts.Last().ToLower())
+                switch (parts.Last().ToLower())
                 {
                     case "i":
                     case "ii":
@@ -54,27 +55,27 @@ namespace Fastnet.Core
             return parts.Length > 1 ? parts.Last() : parts.First();
         }
         /// <summary>
-        /// 
+        /// checks if the given ip address is in the range of a cidr address
         /// </summary>
-        /// <param name="stringAddress"></param>
-        /// <param name="cidrAddress"></param>
+        /// <param name="stringAddress">like 192.168.0.23</param>
+        /// <param name="cidrAddress">like 192.168.0.0/24</param>
         /// <returns></returns>
         public static bool IsInIPRange(this string stringAddress, string cidrAddress)
         {
             return IsInIPRange(cidrAddress.ToIPNetwork(), stringAddress.ToIPNetwork());
         }
         /// <summary>
-        /// 
+        /// checks if the given ip address is in the range of a cidr address
         /// </summary>
         /// <param name="address"></param>
-        /// <param name="cidrAddress"></param>
+        /// <param name="cidrAddress">like 192.168.0.0/24</param>
         /// <returns></returns>
         public static bool IsInIPRange(this IPNetwork address, string cidrAddress)
         {
             return IsInIPRange(cidrAddress.ToIPNetwork(), address);
         }
         /// <summary>
-        /// 
+        /// checks if the given ip address is in the range of a cidr address
         /// </summary>
         /// <param name="stringAddress"></param>
         /// <param name="cidrAddress"></param>
@@ -84,7 +85,7 @@ namespace Fastnet.Core
             return IsInIPRange(stringAddress.ToIPNetwork(), cidrAddress);
         }
         /// <summary>
-        /// 
+        /// checks if the given ip address is in the range of a cidr address
         /// </summary>
         /// <param name="address"></param>
         /// <param name="cidrAddress"></param>
@@ -104,7 +105,7 @@ namespace Fastnet.Core
             return IPNetwork.Parse(stringAddress);
         }
         /// <summary>
-        /// 
+        /// converts an IPAddress to an instance of IPNetwork
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
@@ -117,6 +118,7 @@ namespace Fastnet.Core
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
+        /// <param name="indented">true to indent output, default = false</param>
         /// <param name="settings"></param>
         /// <returns></returns>
         public static string ToJson<T>(this T obj, bool indented = false, JsonSerializerSettings settings = null)
@@ -124,17 +126,7 @@ namespace Fastnet.Core
             //return JsonConvert.SerializeObject(obj, settings);
             return JsonConvert.SerializeObject(obj, indented ? Formatting.Indented : Formatting.None, settings);
         }
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="obj"></param>
-        ///// <param name="indented"></param>
-        ///// <returns></returns>
-        //public static string ToJson<T>(this T obj, bool indented)
-        //{
-        //    return JsonConvert.SerializeObject(obj, indented ? Formatting.Indented : Formatting.None);
-        //}
+
         /// <summary>
         /// convert json to an instance of type T
         /// </summary>
@@ -228,7 +220,6 @@ namespace Fastnet.Core
         public static bool StartsWith(this string str, string value, CompareOptions options)
         {
             return str.StartsWith(value, CultureInfo.CurrentCulture, options);
-            //return CultureInfo.CurrentCulture.CompareInfo.IsPrefix(str, value, options);
         }
         /// <summary>
         /// Determines whether the beginning of this string instance matches the specified string
@@ -241,7 +232,6 @@ namespace Fastnet.Core
         /// <returns></returns>
         public static bool StartsWith(this string str, string value, CultureInfo culture, CompareOptions options)
         {
-
             return culture.CompareInfo.IsPrefix(str, value, options);
         }
         /// <summary>
@@ -267,7 +257,6 @@ namespace Fastnet.Core
         public static bool EndsWith(this string str, string value, CompareOptions options)
         {
             return str.EndsWith(value, CultureInfo.CurrentCulture, options);
-            //return CultureInfo.CurrentCulture.CompareInfo.IsSuffix(str, value, options);
         }
         /// <summary>
         /// Determines whether the end of this string instance matches the specified string
@@ -331,16 +320,6 @@ namespace Fastnet.Core
             return @string?.Contains(substring, CultureInfo.CurrentCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreSymbols) ?? false;
         }
 
-        ///// <summary>
-        ///// trims all non \w characters (includes only alphanumerics a_zA_z0-9)
-        ///// </summary>
-        ///// <param name="t"></param>
-        ///// <returns></returns>
-        //public static string TrimToAlphaNumeric(this string t)
-        //{
-        //    //return alphaNumerics.Replace(t, String.Empty);
-        //    return removeNonAlphaNumerics.Replace(t, String.Empty);
-        //}
         internal static T GetAttributeOfType<T>(this Enum enumVal) where T : Attribute
         {
             var typeInfo = enumVal.GetType().GetTypeInfo();
@@ -398,11 +377,13 @@ namespace Fastnet.Core
 
         /// <summary>
         /// Returns the text having removed all chars except alphabetics and digits
+        /// (accents are also removed)
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
         public static string ToAlphaNumerics(this string text)
         {
+            text = text.RemoveDiacritics();
             return removeNonAlphaNumerics.Replace(text, string.Empty);
         }
         /// <summary>
@@ -414,6 +395,17 @@ namespace Fastnet.Core
         {
             strings ??= new string[0];
             return string.Join(", ", strings);
+        }
+        /// <summary>
+        /// create a CSV string from any type using a string selector lambda
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="selector"></param>
+        /// <returns></returns>
+        public static string ToCSV<T>(this IEnumerable<T> list, Func<T,string> selector)
+        {
+            return list.Select(x => selector(x)).ToCSV();
         }
         /// <summary>
         /// Splits text into an array of words
@@ -555,7 +547,7 @@ namespace Fastnet.Core
         /// Checks if a folder can be accessed
         /// </summary>
         /// <param name="folderName">full name of folder to access</param>
-        /// <param name="CanWrite">checks that specified folder can be written to</param>
+        /// <param name="CanWrite">checks that specified folder can be written to by writing a probe file</param>
         /// <param name="createIfRequired">creates specified folder if not present</param>
         /// <param name="log"></param>
         /// <returns></returns>
@@ -603,12 +595,11 @@ namespace Fastnet.Core
             catch (Exception xe)
             {
                 log?.Error(xe, $"current Environment.UserName = {Environment.UserName}");
-                //log.Error($"cannot access {directoryName}, error {xe.GetType().Name}, {xe.Message}");
                 return false;
             }
         }
         /// <summary>
-        /// 
+        /// logs a debug message including caller member and line number
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="text"></param>
@@ -619,7 +610,7 @@ namespace Fastnet.Core
             logger.LogDebug($"{text}, @line .{name}-{line}");
         }
         /// <summary>
-        /// 
+        /// logs a trace message including caller member and line number
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="text"></param>
@@ -630,7 +621,7 @@ namespace Fastnet.Core
             logger.LogTrace($"{text}, @line .{name}-{line}");
         }
         /// <summary>
-        /// 
+        /// logs a warning message including caller member and line number
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="text"></param>
@@ -641,7 +632,7 @@ namespace Fastnet.Core
             logger.LogWarning($"{text}, @line .{name}-{line}");
         }
         /// <summary>
-        /// 
+        /// logs a information message including caller member and line number
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="text"></param>
@@ -652,7 +643,7 @@ namespace Fastnet.Core
             logger.LogInformation($"{text}, @line .{name}-{line}");
         }
         /// <summary>
-        /// 
+        /// logs an error message including caller member and line number
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="message"></param>
@@ -663,7 +654,7 @@ namespace Fastnet.Core
             logger.LogError($"{message}, @line .{name}-{line}");
         }
         /// <summary>
-        /// 
+        /// logs an exception plus message and includes caller member, line number, stacjk trace and inner exceptions
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="xe"></param>
@@ -672,11 +663,10 @@ namespace Fastnet.Core
         /// <param name="name"></param>
         public static void Error(this ILogger logger, Exception xe, string message, [CallerLineNumber] int line = 0, [CallerMemberName] string name = "")
         {
-            logger.LogError($"{xe.Message}, {message}\n{xe.StackTrace}, @line .{name}-{line}");
-            logger.LogError(InnerExceptions(xe.InnerException));
+            logger.LogError($"{message}, {xe.Message}\n{InsertExtendedTrace(xe.StackTrace, xe.InnerException)}, @line .{name}-{line}");
         }
         /// <summary>
-        /// logs an exception with a stacktrace and any inner exceptions
+        /// logs an exception and includes caller member, line number, stacjk trace and inner exceptions
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="xe"></param>
@@ -684,8 +674,7 @@ namespace Fastnet.Core
         /// <param name="name"></param>
         public static void Error(this ILogger logger, Exception xe, [CallerLineNumber] int line = 0, [CallerMemberName] string name = "")
         {
-            logger.LogError($"{xe.Message}\n{xe.StackTrace}, @line .{name}-{line}");
-            logger.LogError(InnerExceptions(xe.InnerException));
+            logger.LogError($"{xe.Message}\n{InsertExtendedTrace(xe.StackTrace, xe.InnerException)}, @line .{name}-{line}");
         }
         /// <summary>
         /// Serialise all inner exceptions to a string
@@ -703,15 +692,50 @@ namespace Fastnet.Core
             msgs.Reverse();
             return string.Join(" <= ", msgs);
         }
-        private static string InnerExceptions(Exception inner)
+        /// <summary>
+        /// Get the package version from the assembly (using location and ProductVersion)
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        public static string GetPackageVersion(this Assembly assembly)
         {
-            var sb = new StringBuilder();
-            while (inner != null)
+            var assemblyLocation = assembly.Location;
+            return System.Diagnostics.FileVersionInfo.GetVersionInfo(assemblyLocation).ProductVersion;
+        }
+        /// <summary>
+        /// get the assembly version using the assembly Version property
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        public static string GetAssemblyVersion(this Assembly assembly)
+        {
+            return assembly.GetName().Version.ToString();
+        }
+        private static string InsertExtendedTrace(string stackTrace, Exception innerException)
+        {
+            var sb = new StringBuilder(stackTrace);
+            foreach (var msg in InnerExceptions(innerException))
             {
-                sb.AppendLine($"-->{inner.Message}");
-                inner = inner.InnerException;
+                sb.AppendLine($"   {msg}");
             }
             return sb.ToString();
+        }
+        private static IEnumerable<string> InnerExceptions(Exception inner)
+        {
+            var list = new List<string>();
+            while (inner != null)
+            {
+                list.Add($"{inner.Message}");
+                inner = inner.InnerException;
+            }
+            return list;
+            //var sb = new StringBuilder();
+            //while (inner != null)
+            //{
+            //    sb.AppendLine($"-->{inner.Message}");
+            //    inner = inner.InnerException;
+            //}
+            //return sb.ToString();
         }
         /// <summary>
         /// workaround for multiple OnChange calls when a monitored options value changes
