@@ -20,6 +20,28 @@ namespace Fastnet.Core
     /// <summary>
     /// 
     /// </summary>
+    public class AssemblyVersion
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Version { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public DateTime DateTime { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PackageVersion { get; set; }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
     public static partial class Extensions
     {
         private static readonly ILogger log = ApplicationLoggerFactory.CreateLogger("Fastnet.Core.Extensions");
@@ -175,6 +197,16 @@ namespace Fastnet.Core
                 }
             }
             return sb.ToString().Normalize(NormalizationForm.FormC);
+        }
+        /// <summary>
+        /// returns text with invalid path name chars removed
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string GetPathSafeString(this string text)
+        {
+            text = text.Replace("\"", "'");
+            return string.Join("", text.Split(Path.GetInvalidFileNameChars()));
         }
         /// <summary>
         /// Compares two string ignoring accents and case
@@ -441,6 +473,24 @@ namespace Fastnet.Core
             throw new ArgumentOutOfRangeException("Value must be between 1 and 3999");
         }
         /// <summary>
+        /// returns timespan as hrs and minutes
+        /// </summary>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        public static string ToDefault(this TimeSpan ts)
+        {
+            var hrs = (ts.Days * 24) + ts.Hours;
+            if (hrs > 0)
+            {
+                return $"{hrs} hrs {ts.Minutes} mins";
+            }
+            else
+            {
+                return $"{ts.Minutes} mins {ts.Seconds} secs";
+            }
+        }
+
+        /// <summary>
         /// Returns the date in the default string format (ddMMMyyyy)
         /// </summary>
         /// <param name="d"></param>
@@ -693,14 +743,84 @@ namespace Fastnet.Core
             return string.Join(" <= ", msgs);
         }
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="executingAssembly"></param>
+        /// <returns></returns>
+        public static IEnumerable<AssemblyVersion> GetVersions(this Assembly executingAssembly)
+        {
+            static AssemblyVersion getAssemblyVersion(AssemblyName assemblyName)
+            {
+                var assembly = Assembly.Load(assemblyName);
+                var productVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion; 
+                Version assemblyVersion = assembly.GetName().Version;
+                // version
+                // .major = version number
+                // .minor = yyMM, year and month
+                // .build = ddHH, day in month and hours (0 - 24)
+                // .minor = mmSS, minues and seconds
+                var year = 2000 + assemblyVersion.Minor / 100; var month = assemblyVersion.Minor % 100;
+                var day = assemblyVersion.Build / 100; var hour = assemblyVersion.Build % 100;
+                var minutes = assemblyVersion.Revision / 100; var seconds = assemblyVersion.Revision % 100;
+                var vd = new DateTime(year, month, day, hour, minutes, seconds);
+                return new AssemblyVersion { Name = assemblyName.Name, Version = assemblyVersion.ToString(), DateTime = vd, PackageVersion = productVersion };
+            }
+            var list = new List<AssemblyVersion>();
+            list.Add(getAssemblyVersion(executingAssembly.GetName()));
+            //var assemblyLocation = executingAssembly.Location;
+            ////executingAssembly.GetName();
+            ////productVersion is v.days.minutes, days = days since 1Jan2020, minutes since midnight 
+            //var productVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(assemblyLocation).ProductVersion;
+            //var parts = productVersion.Split(".");
+            //if(parts.Length == 3)
+            //{
+            //    var days = int.Parse(parts[1]);
+            //    var dt = DateTime.Parse("2020-01-01").AddDays(days);
+            //    var minutes = int.Parse(parts[2]);
+            //    dt = dt.AddMinutes(minutes);
+            //    list.Add(new AssemblyVersion {  Name  = executingAssembly.GetName().Name, Version = productVersion, DateTime = dt});
+            //}
+
+            foreach (var assemblyName in executingAssembly.GetReferencedAssemblies())
+            {
+                if (assemblyName.Name.StartsWith("fastnet", System.Globalization.CompareOptions.IgnoreCase))
+                {
+                    if (!assemblyName.Name.EndsWith("private", System.Globalization.CompareOptions.IgnoreCase)) {
+                        var v = getAssemblyVersion(assemblyName);
+                        list.Add(v);
+                    }
+                }
+            }
+            return list;
+        }
+        /// <summary>
         /// Get the package version from the assembly (using location and ProductVersion)
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
+        [Obsolete]
         public static string GetPackageVersion(this Assembly assembly)
-        {
+        {            
             var assemblyLocation = assembly.Location;
-            return System.Diagnostics.FileVersionInfo.GetVersionInfo(assemblyLocation).ProductVersion;
+            var version = System.Diagnostics.FileVersionInfo.GetVersionInfo(assemblyLocation).ProductVersion;
+            var text = $"{version}";
+            var parts = version.Split('.');
+            if (parts.Length == 4)
+            {
+                try
+                {
+                    var t = int.Parse(parts[1]);
+                    var year = 2000 + t / 100; var month = t % 100;
+                    t = int.Parse(parts[2]);
+                    var day = t / 100; var hour = t % 100;
+                    t = int.Parse(parts[3]);
+                    var minutes = t / 100; var seconds = t % 100;
+                    var vd = new DateTime(year, month, day, hour, minutes, seconds);
+                    text = $"{version} [{vd.ToDefaultWithTime()}]";
+                }
+                catch {  }
+            }
+            return text;
         }
         /// <summary>
         /// get the assembly version using the assembly Version property

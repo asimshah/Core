@@ -32,13 +32,9 @@ namespace CoreTestingWebApp
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-            services.AddService<GoodbyeWorldService>();
-            services.AddService<HelloWorldService>();
-            //services.AddSingleton<HelloWorldService>();
-            //services.AddSingleton<IHostedService>(sp => {
-            //    return sp.GetService<HelloWorldService>();
-            //});
-            services.AddScheduler(Configuration);
+            //services.AddService<GoodbyeWorldService>();
+            //services.AddService<HelloWorldService>();
+            //services.AddScheduler(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

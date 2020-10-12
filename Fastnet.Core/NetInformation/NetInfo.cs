@@ -10,10 +10,23 @@ namespace Fastnet.Core
     public class NetInfo
     {
         /// <summary>
+        /// returns the local IPV4 address
+        /// </summary>
+        /// <returns></returns>
+        public static IPAddress GetLocalIPAddress()
+        {
+            var list = NetInfo.GetLocalIPV4Addresses();
+            //if (list.Count() > 1)
+            //{
+            //    log.Warning($"Multiple local ipaddresses: {(string.Join(", ", list.Select(l => l.ToString()).ToArray()))}, cidr is {messengerOptions.LocalCIDR}, config error?");
+            //}
+            return list.First();
+        }
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<IPAddress> GetLocalIPV4Addresses()
+        private static IEnumerable<IPAddress> GetLocalIPV4Addresses()
         {
             var hostName = Dns.GetHostName();
             var entry = Dns.GetHostEntry(hostName);

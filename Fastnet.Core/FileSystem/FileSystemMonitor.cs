@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -88,9 +89,6 @@ namespace Fastnet.Core
         private DateTimeOffset lastChangeTime;
         private readonly ILogger log;
         private readonly ConcurrentQueue<FileSystemMonitorEvent> queue;
-        //private readonly int notificationInterval;
-        //private readonly int pathMonitorInterval;
-        //private bool intervalStarted;
         private CancellationTokenSource onChangesCancellationSource;
         private CancellationTokenSource pathMonitorCancellationSource;
         private readonly Action<Exception> onError;
@@ -116,10 +114,10 @@ namespace Fastnet.Core
         {
             this.log = log;
             this.queue = new ConcurrentQueue<FileSystemMonitorEvent>();
+
             this.options = options;
             this.path = path;
             this.onChanges = onChanges ?? delegate { };
-            //this.pathMonitorInterval = this.options.PathAvailabilityMonitorInterval;
             this.onError = onError ?? delegate { };
 
         }
@@ -190,6 +188,7 @@ namespace Fastnet.Core
         }
         private void Initialise()
         {
+            lastChangeTime = DateTimeOffset.Now;
             onChangesCancellationSource = new CancellationTokenSource();
             try
             {
@@ -197,12 +196,13 @@ namespace Fastnet.Core
                 {
                     try
                     {
+                        //var pulseCount = 0;
                         while (!onChangesCancellationSource.Token.IsCancellationRequested)
                         {
                             await Task.Delay(2000);
-                            onChangesCancellationSource.Token.ThrowIfCancellationRequested();
+                            //onChangesCancellationSource.Token.ThrowIfCancellationRequested();
                             var targetTime = lastChangeTime + TimeSpan.FromMilliseconds(this.options.ChangeNotificationIdle); // default is 5000 ms
-                            log.Trace($"queue count {queue.Count}, next update at {targetTime.ToDefaultWithTime()}");
+                            log.Trace($"{DateTimeOffset.Now.ToDefaultWithTime()}: queue count {queue.Count}, next update at {targetTime.ToDefaultWithTime()}");
                             if (!queue.IsEmpty && DateTimeOffset.Now > targetTime)
                             {
                                 var list = new List<FileSystemMonitorEvent>();
@@ -214,7 +214,9 @@ namespace Fastnet.Core
                                     }
                                 }
                                 onChanges(list);
+                                lastChangeTime = DateTimeOffset.Now;
                             }
+
                         }
                     }
                     catch (OperationCanceledException)

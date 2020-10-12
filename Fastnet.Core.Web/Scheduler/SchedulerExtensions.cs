@@ -17,7 +17,7 @@ namespace Fastnet.Core.Web
     public static class SchedulerExtensions
     {
         /// <summary>
-        /// Add a background service of type T. Such services are started/stopped automatically but
+        /// Add a (singleton) background service of type T. Such services are started/stopped automatically but
         /// are also accessible using injection (unlile AddHostedService() !!)
         /// </summary>
         /// <typeparam name="T"></typeparam>

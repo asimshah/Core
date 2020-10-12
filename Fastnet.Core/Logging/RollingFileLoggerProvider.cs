@@ -10,11 +10,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Fastnet.Core.Logging
 {
-    internal class RollingFileLoggerProvider : ILoggerProvider
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    public class RollingFileLoggerProvider : ILoggerProvider
+
     {
         protected readonly ConcurrentDictionary<string, RollingFileLogger> _loggers = new ConcurrentDictionary<string, RollingFileLogger>();
         protected readonly Func<string, LogLevel, bool> _filter;
-        internal protected IRollingFileLoggerSettings _settings;
+        protected IRollingFileLoggerSettings _settings;
         private static readonly Func<string, LogLevel, bool> trueFilter = (cat, level) => true;
         private static readonly Func<string, LogLevel, bool> falseFilter = (cat, level) => false;
         private IDisposable _optionsReloadToken;
@@ -31,6 +33,16 @@ namespace Fastnet.Core.Logging
             //    AppFolder = null,
             //    IncludeScopes = includeScopes
             //};
+            var path = Path.Combine(Environment.CurrentDirectory, "logs");
+            if(Directory.Exists(path))
+            {
+                logFolderPath = path;
+            }
+            else
+            {
+                logFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            }
+            //Debug.WriteLine($"Rolling file log path is {logFolderPath}");
             _includeScopes = includeScopes;
         }
         /// <summary>
@@ -79,6 +91,10 @@ namespace Fastnet.Core.Logging
         protected virtual RollingFileLogger CreateLoggerImplementation(string name)
         {
             var includeScopes = _settings?.IncludeScopes ?? _includeScopes;
+            if(string.IsNullOrWhiteSpace(logFolderPath))
+            {
+                Debugger.Break();
+            }
             string logFolder = Path.Combine(logFolderPath, "logs");
             //Debug.WriteLine($"log folder is {logFolder}");
             return new RollingFileLogger(logFolder, name, GetFilter(name, _settings), includeScopes);
@@ -183,4 +199,5 @@ namespace Fastnet.Core.Logging
             }
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

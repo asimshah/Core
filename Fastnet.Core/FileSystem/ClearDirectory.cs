@@ -11,7 +11,8 @@ namespace Fastnet.Core
         /// 
         /// </summary>
         /// <param name="dir"></param>
-        public static void Clear(this DirectoryInfo dir/*, ILogger log = null*/)
+        /// <param name="excludeReadOnly">true to prevent readonly files being deleted</param>
+        public static void Clear(this DirectoryInfo dir, bool excludeReadOnly = false)
         {
             if (dir.Exists)
             {
@@ -19,6 +20,14 @@ namespace Fastnet.Core
                 {
                     try
                     {
+                        if (!excludeReadOnly)
+                        {
+                            if (file.Attributes.HasFlag(FileAttributes.ReadOnly))
+                            {
+                                file.Attributes = file.Attributes & ~FileAttributes.ReadOnly;
+                                log.Information($"{file.FullName} readonly attribute unset");
+                            }
+                        }
                         file.Delete();
                         log.Trace($"{file.FullName} deleted");
                     }

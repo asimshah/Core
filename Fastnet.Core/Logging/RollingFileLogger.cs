@@ -7,7 +7,9 @@ using System.Threading;
 namespace Fastnet.Core.Logging
 {
 
-    internal class RollingFileLogger : ILogger
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    public class RollingFileLogger : ILogger
+
     {
         private readonly string[] lineIndicator = new string[] { ", @line " };
         private FileWriter fw;
@@ -114,4 +116,5 @@ namespace Fastnet.Core.Logging
         //    }
         //}
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

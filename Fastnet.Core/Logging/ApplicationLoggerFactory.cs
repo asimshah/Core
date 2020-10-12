@@ -31,7 +31,7 @@ namespace Fastnet.Core.Logging
                 var lf = serviceProvider.GetService<ILoggerFactory>();
                 return lf.CreateLogger<T>();
             }
-            Debug.WriteLine($"IServiceProvider is null - valid if called without ApplicationLogFactory.Init(), e.g. during add-migration");
+            //Debug.WriteLine($"IServiceProvider is null - valid if called without ApplicationLogFactory.Init(), e.g. during add-migration");
             return null;
             //throw new Exception($"IServiceProvider is null - ApplicationLogFactory.Init() not called?");
         }
@@ -47,7 +47,7 @@ namespace Fastnet.Core.Logging
                 var lf = serviceProvider.GetService<ILoggerFactory>();
                 return lf.CreateLogger(categoryName);
             }
-            Debug.WriteLine($"IServiceProvider is null - valid if called without ApplicationLogFactory.Init(), e.g. during add-migration");
+            //Debug.WriteLine($"IServiceProvider is null - valid if called without ApplicationLogFactory.Init(), e.g. during add-migration");
             return null;
         }
         /// <summary>
@@ -62,7 +62,7 @@ namespace Fastnet.Core.Logging
                 var lf = serviceProvider.GetService<ILoggerFactory>();
                 return lf.CreateLogger(type);
             }
-            Debug.WriteLine($"IServiceProvider is null - valid if called without ApplicationLogFactory.Init(), e.g. during add-migration");
+            //Debug.WriteLine($"IServiceProvider is null - valid if called without ApplicationLogFactory.Init(), e.g. during add-migration");
             return null;
         }
     }
