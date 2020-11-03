@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <Reference Include="Fastnet.Core.Private">
-      <HintPath>..\..\deployment\Dotfuscated\netcoreapp3.1\Fastnet.Core.Private.dll</HintPath>
+      <HintPath>D:\OneDrive\Documents\Deployment\Dotfuscated\netcoreapp3.1\Fastnet.Core.Private.dll</HintPath>
     </Reference>
   </ItemGroup>
 

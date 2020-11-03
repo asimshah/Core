@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreTestingWebApp", "CoreTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fastnet.Core.Web", "Fastnet.Core.Web\Fastnet.Core.Web.csproj", "{0CEB1D58-C778-46BA-900B-AFF92818FB09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fastnet.Core.Private", "Fastnet.Core.Private\Fastnet.Core.Private.csproj", "{F69AE5B6-702C-44C3-ACD5-89359AD9F837}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{0CEB1D58-C778-46BA-900B-AFF92818FB09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CEB1D58-C778-46BA-900B-AFF92818FB09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CEB1D58-C778-46BA-900B-AFF92818FB09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F69AE5B6-702C-44C3-ACD5-89359AD9F837}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{F69AE5B6-702C-44C3-ACD5-89359AD9F837}.Debug|Any CPU.Build.0 = Release|Any CPU
-		{F69AE5B6-702C-44C3-ACD5-89359AD9F837}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F69AE5B6-702C-44C3-ACD5-89359AD9F837}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
