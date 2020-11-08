@@ -1,4 +1,5 @@
 ﻿using Fastnet.Core.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -148,7 +149,6 @@ namespace Fastnet.Core
             //return JsonConvert.SerializeObject(obj, settings);
             return JsonConvert.SerializeObject(obj, indented ? Formatting.Indented : Formatting.None, settings);
         }
-
         /// <summary>
         /// convert json to an instance of type T
         /// </summary>
@@ -277,7 +277,6 @@ namespace Fastnet.Core
         {
             return src?.StartsWith(text, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreSymbols) ?? false;
         }
-
         /// <summary>
         /// Determines whether the end of this string instance matches the specified string
         /// in the CurrentCulture and with given compare options
@@ -351,7 +350,6 @@ namespace Fastnet.Core
         {
             return @string?.Contains(substring, CultureInfo.CurrentCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace | CompareOptions.IgnoreSymbols) ?? false;
         }
-
         internal static T GetAttributeOfType<T>(this Enum enumVal) where T : Attribute
         {
             var typeInfo = enumVal.GetType().GetTypeInfo();
@@ -406,7 +404,6 @@ namespace Fastnet.Core
             }
             throw new ArgumentException("Not an enum type");
         }
-
         /// <summary>
         /// Returns the text having removed all chars except alphabetics and digits
         /// (accents are also removed)
@@ -489,7 +486,6 @@ namespace Fastnet.Core
                 return $"{ts.Minutes} mins {ts.Seconds} secs";
             }
         }
-
         /// <summary>
         /// Returns the date in the default string format (ddMMMyyyy)
         /// </summary>
@@ -882,6 +878,14 @@ namespace Fastnet.Core
                 }
                 //Debug.WriteLine("OnChangeWithDelay");
             });
+        }
+        /// <summary>
+        /// Allows fastnet.Core services to be configured - only necessary at present for messenger multicast autoconfigure
+        /// </summary>
+        /// <param name="services"></param>
+        public static void ConfigureCoreServices(this IServiceCollection services)
+        {
+            services.ConfigureMessengerOptions();
         }
     }
 }

@@ -22,7 +22,7 @@
     <None Remove="Controllers\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fastnet.Core" Version="2.283.866" />
+    <PackageReference Include="Fastnet.Core" Version="2.312.940" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
