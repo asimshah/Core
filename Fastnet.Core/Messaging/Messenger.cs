@@ -24,6 +24,10 @@ namespace Fastnet.Core
         /// <summary>
         /// 
         /// </summary>
+        public bool MulticastEnabled => mcastSender != null;
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="logger"></param>
         /// <param name="options"></param>
         /// <param name="loggerFactory"></param>

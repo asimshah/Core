@@ -35,6 +35,9 @@ namespace CoreTestingWebApp
             //services.AddService<GoodbyeWorldService>();
             //services.AddService<HelloWorldService>();
             //services.AddScheduler(Configuration);
+            services.AddOptions();
+            services.Configure<MessengerOptions>(Configuration.GetSection("MessengerOptions"));
+            services.AddSingleton<Messenger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

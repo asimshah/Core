@@ -48,7 +48,7 @@ namespace Fastnet.Core
                 //    return ip;
                 //}
             }
-            throw new Exception("Local IP Address Not Found!");
+            throw new Exception($"Local IP Address {localNetwork.ToString()} not found!");
         }
     }
     internal class MulticastListener
