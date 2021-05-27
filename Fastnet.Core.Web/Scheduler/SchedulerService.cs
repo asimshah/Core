@@ -20,24 +20,61 @@ namespace Fastnet.Core.Web
     /// </summary>
     public class SchedulerService : HostedService
     {
-        private class ScheduledTaskWrapper
+        /// <summary>
+        /// 
+        /// </summary>
+        public class ScheduledTaskWrapper
         {
-            public CrontabSchedule Schedule { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            internal CrontabSchedule Schedule { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
             public bool ManualStartOnly { get; set; }
-            public IScheduledTask Task { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
+            internal IScheduledTask Task { get; set; }
+            /// <summary>
+            /// 
+            /// </summary>
             public DateTime LastRunTime { get; set; }
-            public DateTime NextRunTime { get; set; }
-            public void Increment()
+            /// <summary>
+            /// 
+            /// </summary>
+            internal DateTime NextRunTime { get; set; }
+            internal void Increment()
             {
                 LastRunTime = NextRunTime;
                 NextRunTime = Schedule.GetNextOccurrence(NextRunTime);
             }
+            /// <summary>
+            /// 
+            /// </summary>
             public bool IsRunning { get; set; }
-            public bool ShouldRun(DateTime currentTime)
+            internal bool ShouldRun(DateTime currentTime)
             {
                 return NextRunTime < currentTime && LastRunTime != NextRunTime;
             }
-            public string ToReportingLine()
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
+            public string GetScheduleDescription()
+            {
+                return CrontabSchedule.GetDescription((Task as ScheduledTask).Schedule);
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <returns></returns>
+            public DateTime GetNextRunTime()
+            {
+                return NextRunTime.ToLocalTime();
+            }
+            internal string ToReportingLine()
             {
                 StringBuilder sb = new StringBuilder();
                 sb.Append(this.Task.GetType().Name);
@@ -45,14 +82,16 @@ namespace Fastnet.Core.Web
                 {
                     sb.Append($" (pipeline of {(this.Task as ScheduledTask).Pipeline.Count} items)");
                 }
-                sb.Append($", schedule: {CrontabSchedule.GetDescription((Task as ScheduledTask).Schedule)}");
+                //sb.Append($", schedule: {CrontabSchedule.GetDescription((Task as ScheduledTask).Schedule)}");
+                sb.Append($", schedule: {GetScheduleDescription()}");
                 if (IsRunning)
                 {
                     sb.Append(", ** is running **");
                 }
                 else
                 {
-                    sb.Append($", will next run at {NextRunTime.ToLocalTime().ToDefaultWithTime()}");
+                    //sb.Append($", will next run at {NextRunTime.ToLocalTime().ToDefaultWithTime()}");
+                    sb.Append($", will next run at {GetNextRunTime().ToDefaultWithTime()}");
                 }
                 return sb.ToString();
             }
@@ -173,6 +212,33 @@ namespace Fastnet.Core.Web
                 lines.Add(item.ToReportingLine());
             }
             return lines;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public ScheduledTaskWrapper GetTask<T>() where T : ScheduledTask
+        {
+            return GetTask(typeof(T));
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="taskType"></param>
+        /// <returns></returns>
+        public ScheduledTaskWrapper GetTask(Type taskType)
+        {
+            var t = _scheduledTasks.Find(st => st.Task.GetType() == taskType);
+            if (t != null)
+            {
+                return t;
+            }
+            else
+            {
+                log.Warning($"No task of type {taskType.Name} found");
+            }
+            return null;
         }
         private async Task ExecuteScheduledTasks(CancellationToken cancellationToken)
         {

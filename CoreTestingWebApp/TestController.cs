@@ -8,17 +8,30 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Fastnet.Core;
+using Microsoft.Extensions.Logging;
 
 namespace CoreTestingWebApp
 {
+    public class TestMulticast : MessageBase
+    {
+
+    }
     [Route("test")]
     [ApiController]
     public class TestController : ControllerBase
     {
         private readonly IServiceProvider serviceProvider;
-        public TestController(IServiceProvider sp/*, HelloWorldService hws*/)
+        private readonly Messenger messenger;
+        private readonly ILogger log;
+        public TestController(ILogger<TestController> log, Messenger messenger, IServiceProvider sp/*, HelloWorldService hws*/)
         {
+            this.log = log;
             this.serviceProvider = sp;
+            this.messenger = messenger;
+            if (!messenger.MulticastEnabled)
+            {
+                messenger.EnableMulticastSend();
+            }
             //var all = this.serviceProvider.GetServices<IHostedService>();
             //Debugger.Break();
         }
@@ -41,6 +54,15 @@ namespace CoreTestingWebApp
             if (@"all good men" != answer)
             {
                 Debugger.Break();
+            }
+        }
+        [HttpGet("testmc")]
+        public async Task TestMc()
+        {
+            for (int i = 0; i < 10; ++i)
+            {
+                await messenger.SendMulticastAsync(new TestMulticast());
+                log.Information($"multicast sent");
             }
         }
 

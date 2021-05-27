@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -33,17 +34,45 @@ namespace Fastnet.Core
         {
             this.options = options;
             this.log = lf.CreateLogger<MulticastSender>();
-            sendClient = new UdpClient();
-            sendClient.EnableMulticast(options.MulticastIPAddress, options.MulticastPort, options.LocalCIDR);
-            sendTo = new IPEndPoint(IPAddress.Parse(options.MulticastIPAddress), options.MulticastPort);
-            InitialiseQueue();
+            //sendClient = new UdpClient();
+            //sendClient.EnableMulticast(options.MulticastIPAddress, options.MulticastPort, options.LocalCIDR);
+            //sendTo = new IPEndPoint(IPAddress.Parse(options.MulticastIPAddress), options.MulticastPort);
+            Task.Run(async () => await InitialiseQueue());
             log.Information($"sender enabled, {options.MulticastIPAddress}:{options.MulticastPort}");
         }
 
-        private void InitialiseQueue()
+        private async Task InitialiseQueue()
         {
-            messageQueue = new BlockingCollection<MessageBase>();
-            Task.Run(async () => { await ServiceQueue(); });
+            while (true)
+            {
+                //await Task.Run(async () =>
+                //{
+                    try
+                    {
+                        if (sendClient == null)
+                        {
+                            sendClient = new UdpClient();
+                            sendClient.EnableMulticast(options.MulticastIPAddress, options.MulticastPort, options.LocalCIDR);
+                            sendTo = new IPEndPoint(IPAddress.Parse(options.MulticastIPAddress), options.MulticastPort);
+                            messageQueue = new BlockingCollection<MessageBase>();
+                            await ServiceQueue();
+
+                            sendClient.Close();
+                            sendClient.Dispose();
+                            sendClient = null;
+                            //await Task.Delay(5000);
+
+                            log.Warning($"Restarting udp client");
+                        }
+                        //Debugger.Break();
+                    }
+                    catch (Exception xe)
+                    {
+                        log.Error(xe);
+                    }
+                //});
+                await Task.Delay(5000);
+            }
         }
         private async Task ServiceQueue()
         {
@@ -52,7 +81,7 @@ namespace Fastnet.Core
                 int next = Interlocked.Increment(ref sequenceNumber);
                 return next % maxSequenceNumber;
             }
-            while (!messageQueue.IsCompleted)
+            while (true || !messageQueue.IsCompleted)
             {
                 MessageBase message = null;
                 try
@@ -66,18 +95,22 @@ namespace Fastnet.Core
                 }
                 if (message != null)
                 {
-                    try
-                    {
+                    //try
+                    //{
                         message.SequenceNumber = getNextSequence();
                         message.DateTimeUtc = DateTimeOffset.UtcNow;
                         var data = message.ToBytes();
                         await sendClient.SendAsync(data, data.Length, sendTo);
-                        log.Trace($"Sent {message.ToJson()}, type {message.GetType().Name} to {sendTo.ToString()}");
-                    }
-                    catch (Exception xe)
-                    {
-                        log.Error(xe);
-                    }
+                        log.Information($"Sent {message.ToJson()}, type {message.GetType().Name} to {sendTo.ToString()}");
+                    //}
+                    //catch (Exception xe)
+                    //{
+                    //    log.Error(xe);
+                    //}
+                }
+                else
+                {
+                    log.Information($"no message!");
                 }
             }
         }

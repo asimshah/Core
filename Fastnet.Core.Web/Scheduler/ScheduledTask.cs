@@ -36,7 +36,6 @@ namespace Fastnet.Core.Web
         /// <summary>
         /// Cron string defining the schedule
         /// </summary>
-        //[Obsolete("Scheduled tasks are now set directly from SchedulerOptions")]
         internal string Schedule { get; set; }
         /// <summary>
         /// Optional method to call before the task starts
