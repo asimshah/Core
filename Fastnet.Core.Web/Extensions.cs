@@ -1,12 +1,64 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Fastnet.Core.Web
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+    public static class Extensions
+    {
+        public static string UserAgent(this HttpRequest request)
+        {
+            return request.Headers["User-Agent"];
+        }
+
+        public static string GetComparableAddress(this IPAddress addr)
+        {
+            var text = addr.ToString();
+            if (addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+            {
+                text = text.Substring(0, text.IndexOf("%"));
+            }
+            return text;
+        }
+        /// <summary>
+        /// modifies a connection string containing |DataDirectory| to use the Data folder of the contentRoot
+        /// and attaches "-dev" to the databasename if in a development environment
+        /// </summary>
+        /// <param name="env"></param>
+        /// <param name="cs"></param>
+        /// <returns></returns>
+        public static string LocaliseConnectionString(this IHostEnvironment env, string cs)
+        {
+            var dataDirectory = Path.Combine(env.ContentRootPath, "Data");
+            if (dataDirectory.CanAccess(true, true))
+            {
+                SqlConnectionStringBuilder cb = new SqlConnectionStringBuilder(cs);
+                cb.AttachDBFilename = cb.AttachDBFilename.Replace("|DataDirectory|", Path.Combine(env.ContentRootPath, "Data"));
+                if (env.IsDevelopment())
+                {
+                    cb.InitialCatalog = $"{cb.InitialCatalog}-dev";
+                }
+                return cb.ToString();
+            }
+            else
+            {
+                throw new Exception($"cannot access {dataDirectory}");
+            }
+        }
+    }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     /// <summary>
     /// 
     /// </summary>
