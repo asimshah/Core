@@ -5,7 +5,7 @@
     <Copyright>@2018-20</Copyright>
     <DayCount>$([System.DateTime]::UtcNow.Date.Subtract($([System.DateTime]::Parse("2020-01-01"))).TotalDays)</DayCount>
     <MinuteCount>$([System.DateTime]::UtcNow.TimeOfDay.TotalMinutes.ToString("000#"))</MinuteCount>
-    <DayVersion>2.$(DayCount).$(MinuteCount)</DayVersion>
+    <DayVersion>3.$(DayCount).$(MinuteCount)</DayVersion>
     <FastnetVersion>2.$([System.DateTime]::Now.ToString('yyMM')).$([System.DateTime]::Now.ToString('ddHH')).$([System.DateTime]::Now.ToString("mmss"))</FastnetVersion>
     <Version>$(DayVersion)</Version>
     <AssemblyVersion>$(FastnetVersion)</AssemblyVersion>

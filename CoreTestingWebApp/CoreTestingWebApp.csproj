@@ -14,8 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fastnet.Core" Version="3.512.712" />
     <PackageReference Include="Fastnet.Core.Private" Version="1.307.906" />
-    <PackageReference Include="Fastnet.Core.Web" Version="2.512.694" />
+    <PackageReference Include="Fastnet.Core.Web" Version="3.512.716" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.6">
       <PrivateAssets>all</PrivateAssets>
@@ -29,11 +30,6 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Fastnet.Core.Web\Fastnet.Core.Web.csproj" />
-    <ProjectReference Include="..\Fastnet.Core\Fastnet.Core.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

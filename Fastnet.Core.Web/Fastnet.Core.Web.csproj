@@ -5,7 +5,7 @@
     <Copyright>@2018-20</Copyright>
     <DayCount>$([System.DateTime]::UtcNow.Date.Subtract($([System.DateTime]::Parse("2020-01-01"))).TotalDays)</DayCount>
     <MinuteCount>$([System.DateTime]::UtcNow.TimeOfDay.TotalMinutes.ToString("000#"))</MinuteCount>
-    <DayVersion>2.$(DayCount).$(MinuteCount)</DayVersion>
+    <DayVersion>3.$(DayCount).$(MinuteCount)</DayVersion>
     <FastnetVersion>2.$([System.DateTime]::Now.ToString('yyMM')).$([System.DateTime]::Now.ToString('ddHH')).$([System.DateTime]::Now.ToString("mmss"))</FastnetVersion>
     <Version>$(DayVersion)</Version>
     <AssemblyVersion>$(FastnetVersion)</AssemblyVersion>
@@ -22,7 +22,7 @@
     <None Remove="Controllers\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fastnet.Core" Version="2.512.692" />
+    <PackageReference Include="Fastnet.Core" Version="3.512.712" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.6" />
