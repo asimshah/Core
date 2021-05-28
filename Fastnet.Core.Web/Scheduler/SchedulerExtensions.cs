@@ -49,17 +49,7 @@ namespace Fastnet.Core.Web
             {
                 services.Configure<SchedulerOptions>(config.GetSection("SchedulerOptions"));
                 return services.AddService<SchedulerService>();
-                //services.AddSingleton<SchedulerService>();
-                //// now add this instance as an IHostedService as well - consequently it will be started automatically
-                //return services.AddSingleton<IHostedService>(sp =>
-                //{
-                //    var instance = sp.GetService<SchedulerService>();
-                //    if(instance == null)
-                //    {
-                //        Debug.WriteLine($"SchedulerService instance not found");
-                //    }
-                //    return instance;
-                //});
+
             }
             catch (Exception xe)
             {
@@ -68,36 +58,7 @@ namespace Fastnet.Core.Web
             }
 
         }
-        ///// <summary>
-        ///// Adds the Scheduler to the services collection with a handler for an unobserved task exception
-        ///// </summary>
-        ///// <param name="services"></param>
-        ///// <param name="unobservedTaskExceptionHandler"></param>
-        ///// <param name="config"></param>         
-        ///// <returns></returns>
-        //public static IServiceCollection AddScheduler(this IServiceCollection services, IConfiguration config,
-        //    EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler)
-        //{
-        //    services.Configure<SchedulerOptions>(config.GetSection("SchedulerOptions"));
-        //    services.AddSingleton<SchedulerService>();
-        //    return services.AddSingleton<IHostedService>(sp =>
-        //    {
-        //        var instance = sp.GetService<SchedulerService>();
-        //        return instance;
-        //    });
 
-        //    //return services.AddSingleton<IHostedService, SchedulerService>(serviceProvider =>
-        //    //{
-        //    //    var logger = serviceProvider.GetService<ILogger<SchedulerService>>();
-        //    //    var options = serviceProvider.GetService<IOptions<SchedulerOptions>>();
-        //    //    var instance = new SchedulerService(serviceProvider, logger, options);
-        //    //    if (unobservedTaskExceptionHandler != null)
-        //    //    {
-        //    //        instance.UnobservedTaskException += unobservedTaskExceptionHandler;
-        //    //    }
-        //    //    return instance;
-        //    //});
-        //}
         /// <summary>
         /// 
         /// </summary>
@@ -142,7 +103,4 @@ namespace Fastnet.Core.Web
         }
     }
 
-    //public interface IHostingApplicationLifetime
-    //{
-    //}
 }
