@@ -69,6 +69,10 @@ namespace Fastnet.Core.Web
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public virtual Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+        protected T GetService<T>()
+        {
+            return this.serviceProvider.GetService<T>();
+        }
         /// <summary>
         /// Initialises the database - currently runs EFcore migratio if required. Calls OnComplete after this migration (if this method is defined)
         /// (should a separate seed method also be available? can be done inside OnComplete)
@@ -76,6 +80,7 @@ namespace Fastnet.Core.Web
         /// <typeparam name="T"></typeparam>
         /// <param name="OnComplete"></param>
         /// <returns></returns>
+        [Obsolete("use MigrateDatabaseAsync() instead")]
         protected async Task InitialiseDatabaseAsync<T>(Func<SiteInitialiserCompletedArgs<T>, Task> OnComplete = null) where T : DbContext
         {
             log.Information($"{nameof(InitialiseDatabaseAsync)} for {typeof(T).Name} started");
@@ -89,25 +94,96 @@ namespace Fastnet.Core.Web
                 }
                 catch (System.Exception xe)
                 {
-                    log.Error(xe, $"Error initialising QParaDb");
+                    log.Error(xe, $"Error initialising {typeof(T).Name}");
+                }
+            }
+        }
+        /// <summary>
+        /// Migrate the database - runs EFcore migration if required. Calls OnComplete after this migration (if this method is defined)
+        /// (should a separate seed method also be available? can be done inside OnComplete)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="OnComplete"></param>
+        /// <returns></returns>
+        protected async Task MigrateDatabaseAsync<T>(Func<SiteInitialiserCompletedArgs<T>, Task> OnComplete = null) where T : DbContext
+        {
+            log.Information($"{nameof(InitialiseDatabaseAsync)} for {typeof(T).Name} started");
+            using (var scope = serviceProvider.CreateScope())
+            {
+                try
+                {
+                    var db = scope.ServiceProvider.GetService<T>();
+                    var migrated = await MigrateAsync(db);
+                    await OnComplete?.Invoke(new SiteInitialiserCompletedArgs<T>(db, migrated, scope));
+                }
+                catch (System.Exception xe)
+                {
+                    log.Error(xe, $"Error migrating {typeof(T).Name}");
+                }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="action"></param>
+        protected void ExecuteUsingScope(Action<IServiceScope> action)
+        {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                try
+                {
+                    action(scope);
+                }
+                catch (Exception xe)
+                {
+                    log.Error(xe);
+                    throw;
+                }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="actionAsync"></param>
+        /// <returns></returns>
+        protected async Task ExecuteUsingScopeAsync(Func<IServiceScope, Task> actionAsync)
+        {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                try
+                {
+                    await actionAsync(scope);
+                }
+                catch (Exception xe)
+                {
+                    log.Error(xe);
+                    throw;
                 }
             }
         }
         private async Task<bool> MigrateAsync<T>(T db) where T : DbContext
         {
-            var migrations = await db.Database.GetPendingMigrationsAsync();
-            var result = migrations.Any();
-            if (result)
+            try
             {
-                await db.Database.MigrateAsync();
-                log.Information($"{db.GetType().Name} schema migrated");
-                foreach (var migration in migrations)
+                var migrations = await db.Database.GetPendingMigrationsAsync();
+                var result = migrations.Any();
+                if (result)
                 {
-                    log.Information($"\t{migration} applied");
-                }
+                    await db.Database.MigrateAsync();
+                    log.Information($"{db.GetType().Name} schema migrated");
+                    foreach (var migration in migrations)
+                    {
+                        log.Information($"\t{migration} applied");
+                    }
 
+                }
+                return result;
             }
-            return result;
+            catch (Exception xe)
+            {
+                log.Error(xe);
+                throw;
+            }
         }
 
     }
