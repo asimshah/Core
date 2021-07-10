@@ -968,7 +968,53 @@ namespace Fastnet.Core
             }
             return browser;
         }
+        /// <summary>
+        /// returns the text hashed using a one-way algorithm
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string Hash(this string text)
+        {
+            return SecurePasswordHasher.Hash(text);
+        }
+        /// <summary>
+        /// returns the text hashed using a one-way algorithm
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="iterations"></param>
+        /// <returns></returns>
+        public static string Hash(this string text, int iterations)
+        {
+            return SecurePasswordHasher.Hash(text, iterations);
+        }
+        /// <summary>
+        /// Verifies text against its previously hashed version
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="hashedText"></param>
+        /// <returns></returns>
+        public static bool Verify(this string text, string hashedText)
+        {
+            return SecurePasswordHasher.Verify(text, hashedText);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <param name="passPhrase"></param>
+        /// <returns>a json string that can be decrypted using the same passPhrase</returns>
+        public static string Encrypt(this string plainText, string passPhrase)
+        {
+            return EncryptionHandler.Encrypt(plainText, passPhrase);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
 
+        public static string Decrypt(this string cipherText, string passPhrase)
+        {
+            return EncryptionHandler.Decrypt(cipherText, passPhrase);
+        }
         private static string InsertExtendedTrace(string stackTrace, Exception innerException)
         {
             var sb = new StringBuilder(stackTrace);

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Fastnet.Core;
 
 namespace Fastnet.Core.UserAccounts
 {
@@ -43,9 +44,10 @@ namespace Fastnet.Core.UserAccounts
             var user = await FindUserAsync(email);
             if(user == null)
             {
-                var passwordhash = SecurePasswordHasher.Hash(password);
+                var passwordhash = password.Hash();
                 user = new UserAccount { Email = email, PasswordHash = passwordhash };
                 await db.UserAccounts.AddAsync(user);
+                await db.SaveChangesAsync();
                 log.Information($"new user {email} created");
                 return user;
             }
@@ -62,7 +64,7 @@ namespace Fastnet.Core.UserAccounts
         /// <returns></returns>
         public bool Verify(UserAccount user, string password)
         {
-            return SecurePasswordHasher.Verify(password, user.PasswordHash);
+            return password.Verify(user.PasswordHash);
         }
         /// <summary>
         /// 

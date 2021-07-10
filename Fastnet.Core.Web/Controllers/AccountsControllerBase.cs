@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Fastnet.Core.UserAccounts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Fastnet.Core.Shared;
 
 namespace Fastnet.Core.Web
 {
@@ -31,7 +32,7 @@ namespace Fastnet.Core.Web
         /// requires an appsettings section called "JwtSettings" to configure JWT.
         /// This method adds the UserAccountDb DbContext, sets up Authentication using JWT and adds the UserManager as a scoped service
         /// </remarks>
-        ///// <example>
+        /// <example>
         /// JWTSettings in appsettings.json:
         /// <code>
         ///     "JWTSettings": {
@@ -117,7 +118,7 @@ namespace Fastnet.Core.Web
             }
             //var user = new ApplicationUser { UserName = newUser.Email, Email = newUser.Email };
             var user = await userManager.CreateUserAsync(newUser.Email, newUser.Password);
-            return Ok(user);
+            return Ok(user.ToDTO());
         }
         /// <summary>
         /// 
@@ -132,12 +133,12 @@ namespace Fastnet.Core.Web
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="userForAuthentication"></param>
+        /// <param name="userModel"></param>
         /// <returns>BadRequest or OKObjectResult with the token</returns>
-        protected async Task<IActionResult> LoginUserAsync(LoginModel userForAuthentication)
+        protected async Task<IActionResult> LoginUserAsync(LoginModel userModel)
         {
-            var user = await userManager.FindUserAsync(userForAuthentication.Email);
-            if (user == null || userManager.Verify(user, userForAuthentication.Password))
+            var user = await userManager.FindUserAsync(userModel.Email);
+            if (user == null || userManager.Verify(user, userModel.Password) == false)
             {
                 ModelState.AddModelError(string.Empty, "Email and/or password invalid");
                 return BadRequest(ModelState);

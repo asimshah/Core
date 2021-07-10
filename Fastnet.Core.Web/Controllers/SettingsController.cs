@@ -48,7 +48,6 @@ namespace Fastnet.Core.Web
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="config"></param>
         public SettingsController(IConfiguration config) //: base(logger)
         {

@@ -1,0 +1,9 @@
+﻿Important Notes
+
+Typescript
+
+1. if not done, install package Microsoft.Typescript.Build
+	in the package manager type:
+		install-package Microsoft.typescript.build
+
+2.

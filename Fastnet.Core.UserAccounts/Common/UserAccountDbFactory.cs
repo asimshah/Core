@@ -16,7 +16,7 @@ namespace Fastnet.Core.UserAccounts
                  .AddEnvironmentVariables()
                  .Build();
 
-            var builder = new DbContextOptionsBuilder();
+            var builder = new DbContextOptionsBuilder<UserAccountDb>();
 
             var connectionString = configuration
                         .GetConnectionString("DefaultConnection");

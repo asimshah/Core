@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Fastnet.Core;
+using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 //using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -28,7 +30,13 @@ namespace Fastnet.Blazor.Core
         public async Task<T> GetSetting<T>()
         {
             string query = $"settings/get/type/{typeof(T).Name}";
-            return await GetAsync<T>(query);
+            var r = await GetAsync<T>(query);
+            if(!r.Success)
+            {
+                var errors = string.Join(", ", r.Errors.Values.SelectMany(x => x));
+                log.Error($"Failed to get setting of type {typeof(T).Name}: {errors}");
+            }
+            return r.Data;
         }
     }
 }

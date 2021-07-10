@@ -13,12 +13,25 @@ namespace Fastnet.Core.UserAccounts
         public UserAccount User { get; set; }
         public Role Role { get; set; }
     }
+    /// <summary>
+    /// 
+    /// </summary>
     public class UserAccountDb : DbContext
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<UserAccount> UserAccounts { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DbSet<Role> Roles { get; set; }
         internal DbSet<UserRole> UserRoles { get; set; }
-        public UserAccountDb(DbContextOptions contextOptions) : base(contextOptions)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="contextOptions"></param>
+        public UserAccountDb(DbContextOptions<UserAccountDb> contextOptions) : base(contextOptions)
         {
 
         }

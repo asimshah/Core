@@ -16,10 +16,14 @@
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors>;NU1605</WarningsAsErrors>
+    <NoWarn>1701;1702;CS1591</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Fastnet.Core" Version="3.512.712" />
-    <PackageReference Include="Fastnet.Core.Shared" Version="1.523.872" />
-    <PackageReference Include="Fastnet.Core.UserAccounts" Version="1.525.834" />
+    <PackageReference Include="Fastnet.Core" Version="3.556.884" />
+    <PackageReference Include="Fastnet.Core.Shared" Version="1.538.1000" />
+    <PackageReference Include="Fastnet.Core.UserAccounts" Version="1.556.886" />
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />

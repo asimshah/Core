@@ -39,6 +39,20 @@ namespace Fastnet.Core.Web
             }
             return false;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static T Get<T>(this IActionResult result) where T : class
+        {
+            if(result is OkObjectResult)
+            {
+                return (result as OkObjectResult).Value as T;
+            }
+            throw new Exception($"{nameof(result)} is not OKObjectResult");
+        }
     }
     /// <summary>
     /// 

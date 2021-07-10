@@ -2,10 +2,10 @@
 
 namespace Fastnet.Core.Shared
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public record UserAccountDTO(long Id, string Email);
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    //public record UserAccountDTO(long Id, string Email);
     /// <summary>
     /// 
     /// </summary>
