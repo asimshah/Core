@@ -1,7 +1,10 @@
-﻿using Fastnet.Core.Shared;
+﻿using Fastnet.Core;
+using Fastnet.Core.Shared;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -14,8 +17,9 @@ namespace Fastnet.Blazor.Core
     {
         Task<WebApiResult<string>> LoginAsync<T>(T userForlogin/*, ValidatorCollection validators = null*/) where T : LoginModel;
         Task LogoutAsync();
-        Task RefreshTokenAsync();
+        Task<WebApiResult<string>> RefreshTokenAsync();
         Task<WebApiResult<UserAccountDTO>> RegisterUserAsync<T>(T userForRegistration/*, ValidatorCollection validators = null*/) where T : RegistrationModel;
+        void SetOnUnAuthorised(Action method);
     }
 
     /// <summary>
@@ -40,9 +44,9 @@ namespace Fastnet.Blazor.Core
             _authStateProvider = authStateProvider as IAuthenticationStateProvider;
             _localStorage = localStorage;
         }
-        public abstract Task<WebApiResult<UserAccountDTO>> RegisterUserAsync<T>(T userForRegistration/*, ValidatorCollection validators = null*/) where T : RegistrationModel;
-        public abstract Task<WebApiResult<string>> LoginAsync<T>(T userForLogin/*, ValidatorCollection validators = null*/) where T : LoginModel;
-        public abstract Task RefreshTokenAsync();
+        public abstract Task<WebApiResult<UserAccountDTO>> RegisterUserAsync<T>(T userForRegistration) where T : RegistrationModel;
+        public abstract Task<WebApiResult<string>> LoginAsync<T>(T userForLogin) where T : LoginModel;
+        public abstract Task<WebApiResult<string>> RefreshTokenAsync();
         /// <summary>
         /// Sets a token for the given emal
         /// </summary>
@@ -51,6 +55,8 @@ namespace Fastnet.Blazor.Core
         /// <returns></returns>
         protected async Task<string> SetTokenAsync(string token, string email)
         {
+            Debug.Assert(!string.IsNullOrWhiteSpace(token));
+            //log.Information($"setting token {token}");
             await _localStorage.SetAsync<string>("authToken", token);
             _authStateProvider.NotifyUserAuthentication(email); // why this and the next???
             await _authStateProvider.NotifyUserAuthenticationAsync(); // why this and thew previous??
@@ -74,9 +80,17 @@ namespace Fastnet.Blazor.Core
         /// <returns></returns>
         protected async Task RefreshTokenAsync(string token)
         {
+            Debug.Assert(!string.IsNullOrWhiteSpace(token));
+            //log.Information($"resetting token to {token}");
             await _localStorage.SetAsync<string>("authToken", token);
             await _authStateProvider.NotifyUserAuthenticationAsync();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+        }
+        internal async Task ClearCurrentTokenAsync()
+        {
+            await _localStorage.RemoveAsync("authToken");
+            client.DefaultRequestHeaders.Authorization = null;
+            log.Warning($"token cleared internally");
         }
     }
 }

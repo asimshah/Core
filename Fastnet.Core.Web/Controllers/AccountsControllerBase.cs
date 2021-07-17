@@ -66,7 +66,7 @@ namespace Fastnet.Core.Web
                 })
                 .AddJwtBearer(options =>
                 {
-                    var jwtSettings = config.GetSection("JwtSettings");
+                    var jwtSettings = config.GetSection("JWTSettings");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
