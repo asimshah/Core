@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fastnet.Core" Version="3.556.884" />
+    <PackageReference Include="Fastnet.Core" Version="3.563.739" />
     <PackageReference Include="Fastnet.Core.Shared" Version="1.538.1000" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.6" />
